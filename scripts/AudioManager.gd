@@ -81,9 +81,9 @@ func _gen_eat_sound() -> AudioStreamWAV:
 	var data   := PackedFloat32Array()
 	data.resize(frames)
 	for i in frames:
-		var t    := float(i) / SAMPLE_RATE
-		var env  := exp(-t * 12.0)
-		var freq := lerp(440.0, 880.0, float(i) / frames)
+		var t: float = float(i) / SAMPLE_RATE
+		var env: float = exp(-t * 12.0)
+		var freq: float = lerp(440.0, 880.0, float(i) / frames)
 		data[i]  = _sine(freq, t) * env * 0.6
 	return _make_wav(data)
 
@@ -93,10 +93,10 @@ func _gen_die_sound() -> AudioStreamWAV:
 	var data   := PackedFloat32Array()
 	data.resize(frames)
 	for i in frames:
-		var t   := float(i) / SAMPLE_RATE
-		var env := exp(-t * 4.0)
-		var f1  := lerp(300.0, 80.0,  float(i) / frames)
-		var f2  := lerp(450.0, 120.0, float(i) / frames)
+		var t: float = float(i) / SAMPLE_RATE
+		var env: float = exp(-t * 4.0)
+		var f1: float = lerp(300.0, 80.0,  float(i) / frames)
+		var f2: float = lerp(450.0, 120.0, float(i) / frames)
 		data[i] = (_sine(f1, t) + _sine(f2, t) * 0.5) * env * 0.5
 	return _make_wav(data)
 
@@ -106,8 +106,8 @@ func _gen_click_sound() -> AudioStreamWAV:
 	var data   := PackedFloat32Array()
 	data.resize(frames)
 	for i in frames:
-		var t   := float(i) / SAMPLE_RATE
-		var env := exp(-t * 40.0)
+		var t: float = float(i) / SAMPLE_RATE
+		var env: float = exp(-t * 40.0)
 		data[i] = _sine(600.0, t) * env * 0.4
 	return _make_wav(data)
 
@@ -117,7 +117,7 @@ func _gen_move_sound() -> AudioStreamWAV:
 	var data   := PackedFloat32Array()
 	data.resize(frames)
 	for i in frames:
-		var t   := float(i) / SAMPLE_RATE
-		var env := exp(-t * 60.0)
+		var t: float = float(i) / SAMPLE_RATE
+		var env: float = exp(-t * 60.0)
 		data[i] = _sine(200.0, t) * env * 0.2
 	return _make_wav(data)

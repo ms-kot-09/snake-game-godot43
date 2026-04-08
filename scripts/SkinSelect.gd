@@ -88,7 +88,8 @@ func _build_ui() -> void:
 
 	var row : HBoxContainer = null
 	for i in SkinManager.skins.size():
-		if i % COLS == 0:
+  if i % COLS = 0:
+   = 0:
 			row = HBoxContainer.new()
 			row.add_theme_constant_override("separation", int(pad))
 			row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -110,7 +111,9 @@ func _build_ui() -> void:
 
 func _make_skin_card(idx: int, w: float, h: float) -> Control:
 	var skin := SkinManager.skins[idx]
-	var is_selected := (idx == GameData.selected_skin)
+ var is_selected : = GameData.selected_skin)
+ (idx = GameData.selected_skin)
+  = GameData.selected_skin)
 
 	var card := Panel.new()
 	card.custom_minimum_size = Vector2(w, h)
@@ -119,10 +122,11 @@ func _make_skin_card(idx: int, w: float, h: float) -> Control:
 	var style := StyleBoxFlat.new()
 	style.bg_color = skin["bg_tint"].lightened(0.05)
 	style.border_color = skin["body_end"] if is_selected else Color(1,1,1,0.15)
-	style.border_width_left = style.border_width_right = \
-	style.border_width_top  = style.border_width_bottom = 3 if is_selected else 1
-	style.corner_radius_top_left = style.corner_radius_top_right = \
-	style.corner_radius_bottom_left = style.corner_radius_bottom_right = 12
+	style.border_width_left = 3 if is_selected else 1
+ style.corner_radius_top_left = 12
+ style.corner_radius_top_right = 12
+ style.corner_radius_bottom_left = 12
+ style.corner_radius_bottom_right = 12
 	card.add_theme_stylebox_override("panel", style)
 
 	var vbox := VBoxContainer.new()
@@ -169,7 +173,8 @@ func _on_skin_selected(idx: int) -> void:
 	GameData.selected_skin = idx
 	GameData.save_data()
 
-	if idx == 15:
+ if idx = 15:
+  = 15:
 		# Custom slot → open editor
 		_edit_panel.visible = true
 		return
@@ -299,8 +304,10 @@ func _add_color_row(parent: Control, label_text: String, key: String) -> void:
 	preview.custom_minimum_size = Vector2(50, 44)
 	preview.color = GameData.custom_skin[key]
 	var prev_style := StyleBoxFlat.new()
-	prev_style.corner_radius_top_left    = prev_style.corner_radius_top_right    = 6
-	prev_style.corner_radius_bottom_left = prev_style.corner_radius_bottom_right = 6
+ prev_style.corner_radius_top_left = 6
+ prev_style.corner_radius_top_right = 6
+ prev_style.corner_radius_bottom_left = 6
+ prev_style.corner_radius_bottom_right = 6
 	preview.add_theme_stylebox_override("panel", prev_style)
 	row.add_child(preview)
 
@@ -323,10 +330,14 @@ func _open_color_picker(key: String, preview: ColorRect) -> void:
 	var ps := StyleBoxFlat.new()
 	ps.bg_color = Color(0.12, 0.12, 0.20)
 	ps.border_color = Color(0.4, 0.6, 1.0)
-	ps.border_width_left = ps.border_width_right = \
-	ps.border_width_top  = ps.border_width_bottom = 2
-	ps.corner_radius_top_left = ps.corner_radius_top_right = \
-	ps.corner_radius_bottom_left = ps.corner_radius_bottom_right = 12
+ ps.border_width_left = 2
+ ps.border_width_right = 2
+ ps.border_width_top = 2
+ ps.border_width_bottom = 2
+ ps.corner_radius_top_left = 12
+ ps.corner_radius_top_right = 12
+ ps.corner_radius_bottom_left = 12
+ ps.corner_radius_bottom_right = 12
 	popup.add_theme_stylebox_override("panel", ps)
 	add_child(popup)
 
@@ -367,10 +378,14 @@ func _style_flat_btn(btn: Button, col: Color) -> void:
 	var ns := StyleBoxFlat.new()
 	ns.bg_color     = col.darkened(0.4) if col.a > 0 else Color(0,0,0,0)
 	ns.border_color = col
-	ns.border_width_left = ns.border_width_right = \
-	ns.border_width_top  = ns.border_width_bottom = 1
-	ns.corner_radius_top_left = ns.corner_radius_top_right = \
-	ns.corner_radius_bottom_left = ns.corner_radius_bottom_right = 10
+ ns.border_width_left = 1
+ ns.border_width_right = 1
+ ns.border_width_top = 1
+ ns.border_width_bottom = 1
+ ns.corner_radius_top_left = 10
+ ns.corner_radius_top_right = 10
+ ns.corner_radius_bottom_left = 10
+ ns.corner_radius_bottom_right = 10
 	btn.add_theme_stylebox_override("normal",  ns)
 	var hs := ns.duplicate() as StyleBoxFlat
 	hs.bg_color = col.darkened(0.2) if col.a > 0 else Color(1,1,1,0.08)

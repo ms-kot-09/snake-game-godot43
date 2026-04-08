@@ -1,7 +1,11 @@
 extends Node2D
 # ─── Skin Selection Screen ────────────────────────────────────────────────────
+# Shows a 4-column grid of 15 preset skins + 1 custom slot.
+# Tapping a skin selects it; tapping Custom opens the RGB editor.
 
 var _time       : float = 0.0
+var _hover_idx  : int   = -1
+var _edit_open  : bool  = false
 var _edit_panel : Control
 
 func _ready() -> void:
@@ -10,15 +14,18 @@ func _ready() -> void:
 func _build_ui() -> void:
 	var vp := get_viewport_rect().size
 
+	# Root control
 	var root := Control.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(root)
 
+	# Background
 	var bg := ColorRect.new()
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	bg.color = Color(0.047, 0.047, 0.075)
 	root.add_child(bg)
 
+	# Header
 	var header := HBoxContainer.new()
 	header.position = Vector2(0, 0)
 	header.size     = Vector2(vp.x, 80)
@@ -45,10 +52,12 @@ func _build_ui() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	header.add_child(title)
 
+	# Spacer (mirror back btn for centering)
 	var spacer := Control.new()
 	spacer.custom_minimum_size = Vector2(80, 80)
 	header.add_child(spacer)
 
+	# Scroll area
 	var scroll := ScrollContainer.new()
 	scroll.position = Vector2(0, 80)
 	scroll.size     = Vector2(vp.x, vp.y - 80)
@@ -60,6 +69,7 @@ func _build_ui() -> void:
 	grid_root.add_theme_constant_override("separation", 0)
 	scroll.add_child(grid_root)
 
+	# Current selection label
 	var sel_lbl := Label.new()
 	sel_lbl.name = "SelLabel"
 	var sk := SkinManager.skins[GameData.selected_skin]
@@ -70,10 +80,11 @@ func _build_ui() -> void:
 	sel_lbl.custom_minimum_size = Vector2(vp.x, 48)
 	grid_root.add_child(sel_lbl)
 
-	var COLS : int = 4
-	var pad  : float = 10.0
-	var card_w : float = (vp.x - pad * (COLS + 1)) / COLS
-	var card_h : float = card_w * 1.15
+	# Grid of skins (4 per row)
+	var COLS := 4
+	var pad  := 10.0
+	var card_w := (vp.x - pad * (COLS + 1)) / COLS
+	var card_h := card_w * 1.15
 
 	var row : HBoxContainer = null
 	for i in SkinManager.skins.size():
@@ -88,16 +99,18 @@ func _build_ui() -> void:
 			margin.add_theme_constant_override("margin_bottom", int(pad * 0.5))
 			margin.add_child(row)
 			grid_root.add_child(margin)
+
 		var card := _make_skin_card(i, card_w, card_h)
 		row.add_child(card)
 
+	# Custom skin edit panel (hidden by default)
 	_edit_panel = _build_edit_panel(vp)
 	_edit_panel.visible = false
 	root.add_child(_edit_panel)
 
 func _make_skin_card(idx: int, w: float, h: float) -> Control:
 	var skin := SkinManager.skins[idx]
-	var is_selected : bool = (idx == GameData.selected_skin)
+	var is_selected := (idx == GameData.selected_skin)
 
 	var card := Panel.new()
 	card.custom_minimum_size = Vector2(w, h)
@@ -106,13 +119,13 @@ func _make_skin_card(idx: int, w: float, h: float) -> Control:
 	var style := StyleBoxFlat.new()
 	style.bg_color = skin["bg_tint"].lightened(0.05)
 	style.border_color = skin["body_end"] if is_selected else Color(1,1,1,0.15)
-	style.border_width_left   = 3 if is_selected else 1
-	style.border_width_right  = 3 if is_selected else 1
-	style.border_width_top    = 3 if is_selected else 1
+	style.border_width_left = 3 if is_selected else 1
+	style.border_width_right = 3 if is_selected else 1
+	style.border_width_top = 3 if is_selected else 1
 	style.border_width_bottom = 3 if is_selected else 1
-	style.corner_radius_top_left     = 12
-	style.corner_radius_top_right    = 12
-	style.corner_radius_bottom_left  = 12
+	style.corner_radius_top_left = 12
+	style.corner_radius_top_right = 12
+	style.corner_radius_bottom_left = 12
 	style.corner_radius_bottom_right = 12
 	card.add_theme_stylebox_override("panel", style)
 
@@ -122,12 +135,14 @@ func _make_skin_card(idx: int, w: float, h: float) -> Control:
 	vbox.add_theme_constant_override("separation", 4)
 	card.add_child(vbox)
 
+	# Emoji
 	var em := Label.new()
 	em.text = skin["emoji"]
 	em.add_theme_font_size_override("font_size", int(w * 0.32))
 	em.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(em)
 
+	# Name
 	var nm := Label.new()
 	nm.text = skin["name"]
 	nm.add_theme_font_size_override("font_size", int(w * 0.15))
@@ -135,6 +150,7 @@ func _make_skin_card(idx: int, w: float, h: float) -> Control:
 	nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(nm)
 
+	# Selected checkmark
 	if is_selected:
 		var chk := Label.new()
 		chk.text = "✓"
@@ -143,6 +159,7 @@ func _make_skin_card(idx: int, w: float, h: float) -> Control:
 		chk.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(chk)
 
+	# Click area
 	var btn := Button.new()
 	btn.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_style_flat_btn(btn, Color(0,0,0,0))
@@ -155,9 +172,13 @@ func _on_skin_selected(idx: int) -> void:
 	AudioManager.play_click()
 	GameData.selected_skin = idx
 	GameData.save_data()
+
 	if idx == 15:
+		# Custom slot → open editor
 		_edit_panel.visible = true
 		return
+
+	# Rebuild grid to show new selection
 	get_tree().reload_current_scene()
 
 func _build_edit_panel(vp: Vector2) -> Control:
@@ -180,6 +201,7 @@ func _build_edit_panel(vp: Vector2) -> Control:
 	vbox.add_theme_constant_override("separation", 16)
 	scroll.add_child(vbox)
 
+	# Title
 	var title := Label.new()
 	title.text = "🎨  Custom Skin Editor"
 	title.add_theme_font_size_override("font_size", 28)
@@ -187,12 +209,14 @@ func _build_edit_panel(vp: Vector2) -> Control:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
 
-	_add_color_row(vbox, "Body Start (tail)", "body_start")
-	_add_color_row(vbox, "Body End (head)",   "body_end")
-	_add_color_row(vbox, "Head Color",        "head")
-	_add_color_row(vbox, "Eye Color",         "eye")
-	_add_color_row(vbox, "Glow Color",        "glow")
+	# Color pickers
+	_add_color_row(vbox, "Body Start (tail)",  "body_start")
+	_add_color_row(vbox, "Body End (head)",    "body_end")
+	_add_color_row(vbox, "Head Color",         "head")
+	_add_color_row(vbox, "Eye Color",          "eye")
+	_add_color_row(vbox, "Glow Color",         "glow")
 
+	# Pattern selector
 	var pat_lbl := Label.new()
 	pat_lbl.text = "Pattern"
 	pat_lbl.add_theme_font_size_override("font_size", 20)
@@ -209,6 +233,7 @@ func _build_edit_panel(vp: Vector2) -> Control:
 		GameData.custom_skin["pattern"] = patterns[i])
 	vbox.add_child(pat_opts)
 
+	# Shape selector
 	var shp_lbl := Label.new()
 	shp_lbl.text = "Segment Shape"
 	shp_lbl.add_theme_font_size_override("font_size", 20)
@@ -225,6 +250,7 @@ func _build_edit_panel(vp: Vector2) -> Control:
 		GameData.custom_skin["shape"] = shapes[i])
 	vbox.add_child(shp_opts)
 
+	# Glow toggle
 	var glow_chk := CheckButton.new()
 	glow_chk.text = "Enable Glow"
 	glow_chk.button_pressed = GameData.custom_skin["glow_on"]
@@ -234,6 +260,7 @@ func _build_edit_panel(vp: Vector2) -> Control:
 		GameData.custom_skin["glow_on"] = on)
 	vbox.add_child(glow_chk)
 
+	# Buttons
 	var btn_box := HBoxContainer.new()
 	btn_box.add_theme_constant_override("separation", 12)
 	btn_box.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -270,14 +297,15 @@ func _add_color_row(parent: Control, label_text: String, key: String) -> void:
 	lbl.vertical_alignment  = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(lbl)
 
+	# Color preview + picker button
 	var preview := ColorRect.new()
 	preview.name = "Preview_" + key
 	preview.custom_minimum_size = Vector2(50, 44)
 	preview.color = GameData.custom_skin[key]
 	var prev_style := StyleBoxFlat.new()
-	prev_style.corner_radius_top_left     = 6
-	prev_style.corner_radius_top_right    = 6
-	prev_style.corner_radius_bottom_left  = 6
+	prev_style.corner_radius_top_left = 6
+	prev_style.corner_radius_top_right = 6
+	prev_style.corner_radius_bottom_left = 6
 	prev_style.corner_radius_bottom_right = 6
 	preview.add_theme_stylebox_override("panel", prev_style)
 	row.add_child(preview)
@@ -291,6 +319,7 @@ func _add_color_row(parent: Control, label_text: String, key: String) -> void:
 	row.add_child(pick_btn)
 
 func _open_color_picker(key: String, preview: ColorRect) -> void:
+	# Create a popup-like panel with a ColorPicker
 	var popup := Panel.new()
 	popup.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	popup.size = Vector2(380, 480)
@@ -300,13 +329,13 @@ func _open_color_picker(key: String, preview: ColorRect) -> void:
 	var ps := StyleBoxFlat.new()
 	ps.bg_color = Color(0.12, 0.12, 0.20)
 	ps.border_color = Color(0.4, 0.6, 1.0)
-	ps.border_width_left   = 2
-	ps.border_width_right  = 2
-	ps.border_width_top    = 2
+	ps.border_width_left = 2
+	ps.border_width_right = 2
+	ps.border_width_top = 2
 	ps.border_width_bottom = 2
-	ps.corner_radius_top_left     = 12
-	ps.corner_radius_top_right    = 12
-	ps.corner_radius_bottom_left  = 12
+	ps.corner_radius_top_left = 12
+	ps.corner_radius_top_right = 12
+	ps.corner_radius_bottom_left = 12
 	ps.corner_radius_bottom_right = 12
 	popup.add_theme_stylebox_override("panel", ps)
 	add_child(popup)
@@ -348,15 +377,15 @@ func _style_flat_btn(btn: Button, col: Color) -> void:
 	var ns := StyleBoxFlat.new()
 	ns.bg_color     = col.darkened(0.4) if col.a > 0 else Color(0,0,0,0)
 	ns.border_color = col
-	ns.border_width_left   = 1
-	ns.border_width_right  = 1
-	ns.border_width_top    = 1
+	ns.border_width_left = 1
+	ns.border_width_right = 1
+	ns.border_width_top = 1
 	ns.border_width_bottom = 1
-	ns.corner_radius_top_left     = 10
-	ns.corner_radius_top_right    = 10
-	ns.corner_radius_bottom_left  = 10
+	ns.corner_radius_top_left = 10
+	ns.corner_radius_top_right = 10
+	ns.corner_radius_bottom_left = 10
 	ns.corner_radius_bottom_right = 10
-	btn.add_theme_stylebox_override("normal", ns)
+	btn.add_theme_stylebox_override("normal",  ns)
 	var hs := ns.duplicate() as StyleBoxFlat
 	hs.bg_color = col.darkened(0.2) if col.a > 0 else Color(1,1,1,0.08)
 	btn.add_theme_stylebox_override("hover",   hs)
@@ -368,10 +397,11 @@ func _process(delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
+	# Animated top accent line
 	var vp  := get_viewport_rect().size
-	var t   : float = _time * 0.6
+	var t   := _time * 0.6
 	for i in 3:
-		var alpha  : float = sin(t + i * 1.2) * 0.3 + 0.4
-		var offset : float = fmod(t * 100 + i * 200, vp.x)
+		var alpha: float = sin(t + i * 1.2) * 0.3 + 0.4
+		var offset: float = fmod(t * 100 + i * 200, vp.x)
 		draw_rect(Rect2(offset - 40, 0, 80, 2),
 		          Color(0.2, 1.0, 0.5, alpha * 0.5))

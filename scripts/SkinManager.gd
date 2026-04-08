@@ -274,7 +274,7 @@ func get_segment_color(skin: Dictionary, index: int, total: int, time: float) ->
 		"checker":
 			return skin["body_start"] if (index % 2 == 0) else skin["body_end"]
 		"pulse":
-			var pulse: float = (sin(time * 4.0 + t * PI) * 0.5 + 0.5)
+			var pulse := (sin(time * 4.0 + t * PI) * 0.5 + 0.5)
 			return skin["body_start"].lerp(skin["body_end"], pulse)
 		_:
 			return skin["body_end"]

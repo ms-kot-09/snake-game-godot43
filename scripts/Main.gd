@@ -104,9 +104,14 @@ func _add_btn(parent: Control, txt: String, col: Color, cb: Callable) -> void:
 	var ns := StyleBoxFlat.new()
 	ns.bg_color          = col.darkened(0.5)
 	ns.border_color      = col
-	ns.border_width_left = ns.border_width_right = ns.border_width_top = ns.border_width_bottom = 2
-	ns.corner_radius_top_left = ns.corner_radius_top_right = \
-	ns.corner_radius_bottom_left = ns.corner_radius_bottom_right = 12
+	ns.border_width_left = 2
+	ns.border_width_right = 2
+	ns.border_width_top = 2
+	ns.border_width_bottom = 2
+	ns.corner_radius_top_left = 12
+	ns.corner_radius_top_right = 12
+	ns.corner_radius_bottom_left = 12
+	ns.corner_radius_bottom_right = 12
 	btn.add_theme_stylebox_override("normal", ns)
 
 	var hs := ns.duplicate() as StyleBoxFlat

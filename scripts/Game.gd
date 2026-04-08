@@ -211,10 +211,14 @@ func _add_overlay_btn(parent: Control, txt: String, col: Color, cb: Callable) ->
 	var ns := StyleBoxFlat.new()
 	ns.bg_color = col.darkened(0.55)
 	ns.border_color = col
-	ns.border_width_left = ns.border_width_right = \
-	ns.border_width_top  = ns.border_width_bottom = 2
-	ns.corner_radius_top_left = ns.corner_radius_top_right = \
-	ns.corner_radius_bottom_left = ns.corner_radius_bottom_right = 10
+	ns.border_width_left = 2
+	ns.border_width_right = 2
+	ns.border_width_top = 2
+	ns.border_width_bottom = 2
+	ns.corner_radius_top_left = 10
+	ns.corner_radius_top_right = 10
+	ns.corner_radius_bottom_left = 10
+	ns.corner_radius_bottom_right = 10
 	btn.add_theme_stylebox_override("normal",  ns)
 	var hs := ns.duplicate() as StyleBoxFlat
 	hs.bg_color = col.darkened(0.3)
@@ -439,7 +443,7 @@ func _draw_grid() -> void:
 func _draw_food() -> void:
 	var center := _cell_center(food)
 	var r      := _seg_radius()
-	var pulse  := sin(_time * 5.0) * 0.12 + 0.88
+	var pulse: float = sin(_time * 5.0) * 0.12 + 0.88
 	var col    := _skin["food_color"]
 
 	# Outer glow ring
@@ -465,7 +469,7 @@ func _draw_snake() -> void:
 
 		# Glow
 		if skin["glow_on"] and i < 6:
-			var glow_a := lerp(0.25, 0.05, float(i) / 6.0)
+			var glow_a: float = lerp(0.25, 0.05, float(i) / 6.0)
 			draw_circle(center, seg_r * 1.6, skin["glow"] * Color(1,1,1,glow_a))
 
 		# Segment

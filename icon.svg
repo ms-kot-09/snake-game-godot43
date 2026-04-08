@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="22" fill="#0C0C14"/>
+  <!-- Grid dots -->
+  <g fill="#1a2a1a" opacity="0.6">
+    <circle cx="20" cy="20" r="2"/>  <circle cx="40" cy="20" r="2"/>
+    <circle cx="60" cy="20" r="2"/>  <circle cx="80" cy="20" r="2"/>
+    <circle cx="100" cy="20" r="2"/> <circle cx="20" cy="40" r="2"/>
+    <circle cx="20" cy="60" r="2"/>  <circle cx="20" cy="80" r="2"/>
+    <circle cx="100" cy="40" r="2"/> <circle cx="100" cy="60" r="2"/>
+    <circle cx="100" cy="80" r="2"/>
+  </g>
+  <!-- Snake body segments -->
+  <circle cx="40" cy="88" r="10" fill="#1a7a1a"/>
+  <circle cx="60" cy="88" r="10" fill="#22aa22"/>
+  <circle cx="80" cy="88" r="10" fill="#28cc28"/>
+  <circle cx="80" cy="68" r="10" fill="#30e030"/>
+  <circle cx="80" cy="48" r="10" fill="#38f038"/>
+  <!-- Head -->
+  <circle cx="60" cy="48" r="12" fill="#20cc20"/>
+  <!-- Eyes -->
+  <circle cx="56" cy="44" r="4" fill="white"/>
+  <circle cx="64" cy="44" r="4" fill="white"/>
+  <circle cx="57" cy="44" r="2" fill="#001200"/>
+  <circle cx="65" cy="44" r="2" fill="#001200"/>
+  <!-- Food (apple-like) -->
+  <circle cx="40" cy="48" r="9" fill="#ff2244"/>
+  <circle cx="43" cy="45" r="3" fill="rgba(255,255,255,0.5)"/>
+  <!-- Glow effect on head -->
+  <circle cx="60" cy="48" r="16" fill="none" stroke="#20ff20" stroke-width="2" opacity="0.35"/>
+</svg>

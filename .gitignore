@@ -1,0 +1,11 @@
+.godot/
+*.translation
+export.cfg
+export_credentials.cfg
+builds/
+.DS_Store
+Thumbs.db
+*.apk
+*.aab
+.idea/
+.vscode/

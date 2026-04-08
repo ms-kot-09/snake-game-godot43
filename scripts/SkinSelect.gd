@@ -88,8 +88,7 @@ func _build_ui() -> void:
 
 	var row : HBoxContainer = null
 	for i in SkinManager.skins.size():
-  if i % COLS = 0:
-   = 0:
+		if i % COLS == 0:
 			row = HBoxContainer.new()
 			row.add_theme_constant_override("separation", int(pad))
 			row.alignment = BoxContainer.ALIGNMENT_CENTER

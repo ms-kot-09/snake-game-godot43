@@ -262,19 +262,19 @@ func get_active_skin() -> Dictionary:
 	return skins[GameData.selected_skin]
 
 func get_segment_color(skin: Dictionary, index: int, total: int, time: float) -> Color:
-	var t := float(index) / max(float(total - 1), 1.0)
+	var t: float = float(index) / max(float(total - 1), 1.0)
 	match skin["pattern"]:
 		"solid":
 			return skin["body_end"]
 		"gradient":
 			return skin["body_start"].lerp(skin["body_end"], 1.0 - t)
 		"rainbow":
-			var hue := fmod(t + time * 0.3, 1.0)
+			var hue: float = fmod(t + time * 0.3, 1.0)
 			return Color.from_hsv(hue, 1.0, 1.0)
 		"checker":
 			return skin["body_start"] if (index % 2 == 0) else skin["body_end"]
 		"pulse":
-			var pulse := (sin(time * 4.0 + t * PI) * 0.5 + 0.5)
+			var pulse: float = (sin(time * 4.0 + t * PI) * 0.5 + 0.5)
 			return skin["body_start"].lerp(skin["body_end"], pulse)
 		_:
 			return skin["body_end"]
